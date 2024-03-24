@@ -14,8 +14,8 @@ hubo.set_trace("blue")
 # hubo.move()
 # hubo.turn_left()
 # hubo.set_pause(2)
-# hubo.on_beeper()
-# hubo.front_is_clear()
+# hubo.on_beeper() - red cell
+# hubo.front_is_clear() - box (hubo cannot distinguish end of map and box walls)
 
 
 ### implement here
