@@ -8,4 +8,4 @@ if __name__ == '__main__':
         robo.scan_side()
         for i in range(3) :
             robo.scan_side()
-            robo.move_straight()
+            robo.go_forward()
