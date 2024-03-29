@@ -3,6 +3,8 @@ from roboControl import Robot
 robo = Robot()
 b1_x, b1_y = robo.scan_forward()
 b2_x, b2_y = (0, 0)
+r1_x, r1_y = (0, 0)
+r2_x, r2_y = (0, 0)
 
 if b1_x == -1 and b1_y == -1 : 
     b1_x, b1_y = robo.scan_side()
