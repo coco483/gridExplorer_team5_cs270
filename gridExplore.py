@@ -85,7 +85,7 @@ def dfs(prev_pos):
         dest = possible_move.pop()
 
         robo.goto(dest)
-        dfs(dest)
+        dfs(robo.position)
 
         # 모든 red grid를 탐색 완료함: 즉시 탐색을 중지하고 dfs 재귀를 회수하며 초기 위치로 돌아감
         if len(red_pos) == 2: break
