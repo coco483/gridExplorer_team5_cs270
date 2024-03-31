@@ -93,14 +93,14 @@ def dfs(prev_pos):
     while len(possible_move) > 0:
         dest = possible_move.pop()
 
-        robo.goto(dest)
+        robo.go_to(dest[0], dest[1])
         dfs(robo.position)
 
         # 모든 red grid를 탐색 완료함: 즉시 탐색을 중지하고 dfs 재귀를 회수하며 초기 위치로 돌아감
         if len(red_pos) == 2: break
 
     # 모든 이동 가능한 위치를 다 돌아봄(갈 수 있는 선택지가 없음): 다시 원래 위치로 되돌아감
-    if not prev_pos == (-1, -1): robo.goto(prev_pos)
+    if not prev_pos == (-1, -1): robo.go_to(prev_pos[0], prev_pos[1])
     return True
 
 # 실행
