@@ -4,8 +4,6 @@ robo = Robot()
 b1_x, b1_y = robo.scan_forward()
 b2_x, b2_y = (-1, -1)
 
-red_pos = []
-
 if b1_x == -1 and b1_y == -1 : 
     b1_x, b1_y = robo.scan_side()
     for i in range(3) :
@@ -64,8 +62,12 @@ else :
             robo.go_forward()
         robo.turn_right()
 
+red_pos = []
+visited_list = [(0, 0)]
 
 def dfs(prev_pos):
+    visited_list.append(robo.position)
+
     # 현재 위치가 red grid인지 먼저 확인
     if robo.is_grid_red():
         red_pos.append(robo.position)
@@ -77,23 +79,25 @@ def dfs(prev_pos):
 
     possible_move = []
     for (dx, dy) in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
-            if robo.position[0] + dx < 0 or robo.position[0] + dx > 5: continue # x축 방향의 끝임 
-            if robo.position[1] + dy < 0 or robo.position[1] + dy > 3: continue # y축 방향의 끝임
+        candidate_dest = (robo.position[0]+dx, robo.position[1]+dy)
 
-            # 왔던 길은 다시 탐색하지 않음
-            if (robo.position[0] + dx, robo.position[1] + dy) == prev_pos: continue 
+        # 맵을 벗어남
+        if not 0 <= candidate_dest[0] <= 5 or not 0 <= candidate_dest[1] <= 3: continue 
 
-            # 장애물이 있어 갈 수 없음
-            if (robo.position[0] + dx, robo.position[1] + dy) == (b1_x, b1_y): continue
-            if (robo.position[0] + dx, robo.position[1] + dy) == (b2_x, b2_y): continue
+        # 왔던 길은 다시 탐색하지 않음
+        if candidate_dest in visited_list: continue 
 
-            possible_move.append((robo.position[0] + dx, robo.position[1] + dy))
+        # 장애물이 있어 갈 수 없음
+        if candidate_dest == (b1_x, b1_y) or candidate_dest == (b2_x, b2_y): continue
+
+        possible_move.append(candidate_dest)
 
     while len(possible_move) > 0:
+        new_prev_pos = tuple(robo.position)
         dest = possible_move.pop()
 
         robo.go_to(dest[0], dest[1])
-        dfs(robo.position)
+        dfs(new_prev_pos)
 
         # 모든 red grid를 탐색 완료함: 즉시 탐색을 중지하고 dfs 재귀를 회수하며 초기 위치로 돌아감
         if len(red_pos) == 2: break
