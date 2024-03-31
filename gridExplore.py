@@ -22,7 +22,10 @@ if b1_x == -1 and b1_y == -1 :
             robo.turn_left()
             for i in range(5) :
                 robo.go_back()
-                b2_x, b2_y = robo.scan_side()
+                if b2_x > -1 and b2_y > -1 :
+                    pass
+                else :
+                    b2_x, b2_y = robo.scan_side()
             for i in range(5) :
                 robo.go_forward()
             robo.turn_right()
@@ -31,7 +34,10 @@ if b1_x == -1 and b1_y == -1 :
             robo.turn_right()
             for i in range(5) :
                 robo.go_forward()
-                b2_x, b2_y = robo.scan_side()
+                if b2_x > -1 and b2_y > -1 :
+                    pass
+                else :
+                    b2_x, b2_y = robo.scan_side()
             for i in range(5) :
                 robo.go_back()
             robo.turn_left()
@@ -51,7 +57,10 @@ else :
         robo.turn_left()
         for i in range(5) :
             robo.go_back()
-            b2_x, b2_y = robo.scan_side()
+            if b2_x > -1 and b2_y > -1 :
+                    pass
+            else :
+                b2_x, b2_y = robo.scan_side()
         for i in range(5) :
             robo.go_forward()
         robo.turn_right()
