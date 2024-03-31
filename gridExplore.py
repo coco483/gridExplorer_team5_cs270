@@ -79,7 +79,7 @@ def dfs(prev_pos):
     possible_move = []
     for (dx, dy) in [(-1, 0), (0, -1), (1, 0), (0, 1)]:
             if robo.position[0] + dx < 0 or robo.position[0] + dx > 5: continue # x축 방향의 끝임 
-            if robo.position[1] + dy < 0 or robo.position[0] + dy > 5: continue # y축 방향의 끝임
+            if robo.position[1] + dy < 0 or robo.position[0] + dy > 3: continue # y축 방향의 끝임
 
             # 왔던 길은 다시 탐색하지 않음
             if (robo.position[0] + dx, robo.position[1] + dy) == prev_pos: continue 
