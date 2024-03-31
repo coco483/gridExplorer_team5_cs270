@@ -82,16 +82,15 @@ class CustomRobot(Robot):
       self.go_forward()
       count+=1
     #print(self.position)
-    if (self.position[0] < 5) and (self.position[1] <3):
-      if self.direction=='N':
-        boxpos = (self.position[0], self.position[1]+1)
-      elif self.direction=='W':
-        boxpos = (self.position[0]-1, self.position[1])     
-      elif self.direction=='S':
-        boxpos = (self.position[0], self.position[1]-1)
-      elif self.direction=='E':
-        boxpos = (self.position[0]+1, self.position[1])
-
+    if self.direction=='N':
+      boxpos = (self.position[0], self.position[1]+1)
+    elif self.direction=='W':
+      boxpos = (self.position[0]-1, self.position[1])     
+    elif self.direction=='S':
+      boxpos = (self.position[0], self.position[1]-1)
+    elif self.direction=='E':
+      boxpos = (self.position[0]+1, self.position[1])
+    if (boxpos[0] < 5) and (boxpos[0]>=0) and (boxpos[1]>=0) and (boxpos[1] <3):
       for i in range(count):
         self.go_back()
       print(boxpos)
@@ -110,15 +109,15 @@ class CustomRobot(Robot):
       self.go_forward()
       count+=1
     #print(self.position)
-    if self.position[0] < 5 and self.position[1] <3:
-      if self.direction=='N':
-        boxpos = (self.position[0], self.position[1]+1)
-      elif self.direction=='W':
-        boxpos = (self.position[0]-1, self.position[1])     
-      elif self.direction=='S':
-        boxpos = (self.position[0], self.position[1]-1)
-      elif self.direction=='E':
-        boxpos = (self.position[0]+1, self.position[1])
+    if self.direction=='N':
+      boxpos = (self.position[0], self.position[1]+1)
+    elif self.direction=='W':
+      boxpos = (self.position[0]-1, self.position[1])     
+    elif self.direction=='S':
+      boxpos = (self.position[0], self.position[1]-1)
+    elif self.direction=='E':
+      boxpos = (self.position[0]+1, self.position[1])
+    if (boxpos[0] < 5) and (boxpos[0]>=0) and (boxpos[1]>=0) and (boxpos[1] <3):
       for i in range(count):
         self.go_back()
       self.turn_left()
