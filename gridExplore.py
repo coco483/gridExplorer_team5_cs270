@@ -64,7 +64,7 @@ else :
                 robo.go_back()
                 if b2_x < 0 and b2_y < 0 :
                     b2_x, b2_y = robo.scan_side()
-                if b2_x == b1_x :
+                if b2_x == b1_x and b2_y == b1_y :
                     b2_x, b2_y = (-1, -1)
             for i in range(3) :
                 robo.go_forward()
