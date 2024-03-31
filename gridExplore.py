@@ -11,7 +11,10 @@ if b1_x == -1 and b1_y == -1 :
     for i in range(3) :
         robo.go_forward()
         if b1_x != -1 and b1_y != -1 :
-            b2_x, b2_y = robo.scan_side()
+            if b2_x > -1 and b2_y > -1 :
+                    pass
+            else :
+                b2_x, b2_y = robo.scan_side()
         else :
             b1_x, b1_y = robo.scan_side()
 
