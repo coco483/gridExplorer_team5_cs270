@@ -56,6 +56,7 @@ else :
             robo.go_forward()
         robo.turn_right()
 
+
 def dfs(prev_pos):
     # 현재 위치가 red grid인지 먼저 확인
     if robo.is_grid_red():
@@ -92,3 +93,6 @@ def dfs(prev_pos):
     # 모든 이동 가능한 위치를 다 돌아봄(갈 수 있는 선택지가 없음): 다시 원래 위치로 되돌아감
     if not prev_pos == (-1, -1): robo.goto(prev_pos)
     return True
+
+# 실행
+dfs((-1, -1))
