@@ -21,7 +21,7 @@ class Robot:
         self.boxes=[]
         self.direction='N'
 
-    def go_forward():
+    def go_forward(self):
         self.motor_pair.move(23,unit="cm",steering=0,speed=30)
         if self.direction=='N':
             self.position=(self.position[0],self.position[1]+1)
@@ -32,7 +32,7 @@ class Robot:
         elif self.direction=='S':
             self.position=(self.position[0],self.position[1]-1)
 
-    def turn_left():
+    def turn_left(self):
         self.motor_pair.move(0,unit='cm',steering=-100,speed=30)
         if self.direction=='N':
             self.direction=='W'
@@ -42,7 +42,7 @@ class Robot:
             self.direction=='E'
         if self.direction=='E':
             self.direction=='N'                               
-    def turn_right():
+    def turn_right(self):
         self.motor_pair.move(0,unit='cm',steering=100,speed=30)
         if self.direction=='N':
             self.direction=='E'
@@ -53,12 +53,12 @@ class Robot:
         if self.direction=='W':
             self.direction=='N'
 
-    def is_grid_red():
+    def is_grid_red(self):
         color=self.color_sensor.get_color()
         if color =='red':
             self.red+=self.position
 
-    def scan_forward():
+    def scan_forward(self):
         if self.distance_for.get_distance_cm(short_range=True)<=130:
             number_of_grid_for=math.round(self.distance_for.get_distance_cm(short_range=True)/23)
             box_position=(self.position[0]+number_of_grid_for,self.position[1])
@@ -66,7 +66,7 @@ class Robot:
         else:
             return (-1,-1)
     
-    def scan_side():
+    def scan_side(self):
         if self.distance_side.get_distance_cm(short_range=True)<=130:
             number_of_grid_side=math.round(self.distance_side.get_distance_cm(short_range=True)/23)
             box_position=(self.position[0],self.position[1]+number_of_grid_side)
@@ -74,6 +74,6 @@ class Robot:
         else:
             return (-1,-1)
 
-    def valid_check():
+    def valid_check(self):
         if self.position[0]<0 or self.position[0]>5 or self.position[1]<0 or self.position[1]>3:
             self.position=(-1,-1)
