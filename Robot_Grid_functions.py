@@ -33,43 +33,59 @@ class Robot:
             self.position=(self.position[0],self.position[1]-1)
 
     def turn_left(self):
-        self.motor_pair.move(0,unit='cm',steering=-100,speed=30)
+        self.motor_pair.move(0.66,unit='rotations',steering=-100,speed=30)
         if self.direction=='N':
-            self.direction=='W'
+            self.direction='W'
         elif self.direction=='W':
-            self.direction=='S'     
-        if self.direction=='S':
-            self.direction=='E'
-        if self.direction=='E':
-            self.direction=='N'                               
-    def turn_right(self):
-        self.motor_pair.move(0,unit='cm',steering=100,speed=30)
-        if self.direction=='N':
-            self.direction=='E'
+            self.direction='S'     
+        elif self.direction=='S':
+            self.direction='E'
         elif self.direction=='E':
-            self.direction=='S'
-        if self.direction=='S':
-            self.direction=='W'
-        if self.direction=='W':
-            self.direction=='N'
+            self.direction='N'                               
+    def turn_right(self):
+        self.motor_pair.move(0.66,unit='rotations',steering=100,speed=30)
+        if self.direction=='N':
+            self.direction='E'
+        elif self.direction=='E':
+            self.direction='S'
+        elif self.direction=='S':
+            self.direction='W'
+        elif self.direction=='W':
+            self.direction='N'
 
     def is_grid_red(self):
         color=self.color_sensor.get_color()
         if color =='red':
-            self.red+=self.position
+            return True
+        else:
+            return False
 
     def scan_forward(self):
-        if self.distance_for.get_distance_cm(short_range=True)<=130:
-            number_of_grid_for=math.round(self.distance_for.get_distance_cm(short_range=True)/23)
-            box_position=(self.position[0]+number_of_grid_for,self.position[1])
+        if self.distance_for.get_distance_cm(short_range=False)<=130:
+            number_of_grid_for=round(self.distance_for.get_distance_cm(short_range=False)/23)
+            if self.direction=='N':
+                box_position=(self.position[0],self.position[1]+number_of_grid_for)          
+            elif self.direction=='E':
+                box_position=(self.position[0]+number_of_grid_for,self.position[1])  
+            elif self.direction=='W':
+                box_position=(self.position[0]-number_of_grid_for,self.position[1])
+            elif self.direction=='S':
+                box_position=(self.position[0],self.position[1]-number_of_grid_for)
             return box_position
         else:
             return (-1,-1)
     
     def scan_side(self):
-        if self.distance_side.get_distance_cm(short_range=True)<=130:
-            number_of_grid_side=math.round(self.distance_side.get_distance_cm(short_range=True)/23)
-            box_position=(self.position[0],self.position[1]+number_of_grid_side)
+        if self.distance_side.get_distance_cm(short_range=False)<=130:
+            number_of_grid_side=round(self.distance_side.get_distance_cm(short_range=False)/23)
+            if self.direction=='N':
+                box_position=(self.position[0]+number_of_grid_side,self.position[1])
+            elif self.direction=='E':
+                box_position=(self.position[0],self.position[1]-number_of_grid_side)
+            elif self.direction=='W':
+                box_position=(self.position[0],self.position[1]+number_of_grid_side)
+            elif self.direction=='S':
+                box_position=(self.position[0]-number_of_grid_side,self.position[1])
             return box_position
         else:
             return (-1,-1)
@@ -77,3 +93,31 @@ class Robot:
     def valid_check(self):
         if self.position[0]<0 or self.position[0]>5 or self.position[1]<0 or self.position[1]>3:
             self.position=(-1,-1)
+
+    def go_to(self,x,y):
+        dx= x-self.position[0]
+        dy= y-self.position[1]
+
+        if dx>=0:
+            while self.direction!='E':
+                self.turn_left()
+            for i in range(dx):
+                self.go_forward()
+        else:
+            while self.direction!='W':
+                self.turn_left()
+            for i in range(-dx):
+                self.go_forward()
+        
+        if dy>=0:
+            while self.direction!="N":
+                self.turn_left()
+            for i in range(dy):
+                self.go_forward()
+        else:
+            while self.direction!="S":
+                self.turn_left()
+            for i in range(-dy):
+                self.go_forward()
+
+a=Robot()
