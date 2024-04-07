@@ -1,0 +1,277 @@
+from spike import PrimeHub, LightMatrix, Button, StatusLight, ForceSensor, MotionSensor, Speaker, ColorSensor, App, DistanceSensor, Motor, MotorPair
+from spike.control import wait_for_seconds, wait_until, Timer
+from math import *
+import math
+import time
+hub = PrimeHub()
+
+class Robot:
+    def __init__(self):
+        self.motor_pair = MotorPair("B","C")
+        self.color_sensor=ColorSensor("A")
+        self.distance_for=DistanceSensor('D')
+        self.distance_side=DistanceSensor("F")
+        self.position=(0,0)
+        self.red=[]
+        self.boxes=[]
+        self.safe_columns=[0,1,2,3,4,5]
+        self.safe_rows=[0,1,2,3]
+        self.direction='N'
+
+    def update_safe_columns(self):
+        #두 박스가 존재하지 않는 column number들을 업데이트
+        for i in range(2):
+            self.safe_columns.remove(boxes[i][0])
+    def update_safe_rows(self):
+        #두 박스가 존재하지 않는 row number 들을 업데이트
+        for i in range(2):
+            self.safe_rows.remove(boxes[i][1])
+    def go_forward(self):
+        self.motor_pair.move(24.5,unit="cm",steering=0,speed=30)
+        if self.direction=='N':
+            self.position=(self.position[0],self.position[1]+1)
+        elif self.direction=='E':
+            self.position=(self.position[0]+1,self.position[1])
+        elif self.direction=='W':
+            self.position=(self.position[0]-1,self.position[1])
+        elif self.direction=='S':
+            self.position=(self.position[0],self.position[1]-1)
+
+    def turn_left(self):
+        self.motor_pair.move(0.64,unit='rotations',steering=-100,speed=30)
+        if self.direction=='N':
+            self.direction='W'
+        elif self.direction=='W':
+            self.direction='S'
+        elif self.direction=='S':
+            self.direction='E'
+        elif self.direction=='E':
+            self.direction='N'
+# 0.645 살짝 부족함
+    def turn_right(self):
+        self.motor_pair.move(0.64,unit='rotations',steering=100,speed=30)
+        if self.direction=='N':
+            self.direction='E'
+        elif self.direction=='E':
+            self.direction='S'
+        elif self.direction=='S':
+            self.direction='W'
+        elif self.direction=='W':
+            self.direction='N'
+
+    def is_grid_red(self):
+        color=self.color_sensor.get_color()
+        if color =='red':
+            if self.position not in self.red:
+                self.red+=self.position
+            return True
+        else:
+            return False
+
+    def scan_forward(self):
+        if self.distance_for.get_distance_cm(short_range=False) is None:
+            return (-1,-1)
+        elif self.distance_for.get_distance_cm(short_range=False)<=130 and self.distance_for.get_distance_cm(short_range=False) is not None:
+            number_of_grid_for=round(self.distance_for.get_distance_cm(short_range=False)/23)
+            if self.direction=='N':
+                box_position=(self.position[0],self.position[1]+number_of_grid_for)
+            elif self.direction=='E':
+                box_position=(self.position[0]+number_of_grid_for,self.position[1])
+            elif self.direction=='W':
+                box_position=(self.position[0]-number_of_grid_for,self.position[1])
+            elif self.direction=='S':
+                box_position=(self.position[0],self.position[1]-number_of_grid_for)
+            if box_position not in boxes:
+                boxes+=box_position
+            return box_position
+
+        else:
+            return (-1,-1)
+
+    def scan_side(self):
+        if self.distance_side.get_distance_cm(short_range=False) is None:
+            return (-1,-1)
+        elif self.distance_side.get_distance_cm(short_range=False)<=130 and self.distance_side.get_distance_cm(short_range=False) is not None:
+            number_of_grid_side=round(self.distance_side.get_distance_cm(short_range=False)/23)
+            if self.direction=='N':
+                box_position=(self.position[0]+number_of_grid_side,self.position[1])
+            elif self.direction=='E':
+                box_position=(self.position[0],self.position[1]-number_of_grid_side)
+            elif self.direction=='W':
+                box_position=(self.position[0],self.position[1]+number_of_grid_side)
+            elif self.direction=='S':
+                box_position=(self.position[0]-number_of_grid_side,self.position[1])
+            if box_position not in boxes:
+                boxes+=box_position
+            return box_position
+        else:
+            return (-1,-1)
+
+    def go_back(self):
+        self.motor_pair.move(-24,unit="cm",steering=0,speed=30)
+    def facing_block(self):
+        if self.distance_for.get_distance_cm(short_range=False) is not None:
+            return False
+        elif self.distance_for.get_distance_cm(short_range=False)<=23:
+            if self.direction=='N' and (self.position[0],self.position[1]+1) not in boxes:
+                boxes+=(self.position[0],self.position[1]+1)
+            elif self.direction=='E' and (self.position[0]+1,self.position[1]) not in boxes:
+                boxes+=(self.position[0]+1,self.position[1])
+            elif self.direction=='S' and (self.position[0],self.position[1]-1) not in boxes:
+                boxes+=(self.position[0],self.position[1]-1)
+            elif self.direction=="W" and (self.position[0]-1,self.position[1]) not in boxes:
+                boxes+=(self.position[0]-1,self.position[1])
+            return True
+        else:
+            return False
+
+    def check_column(self):
+        #위쪽을 바라보며 시작
+        self.is_grid_red()
+        for i in range(3):
+            self.go_forward()
+            self.is_grid_red()
+        for i in range(3):
+            self.go_back()
+    def check_row(self):
+        #오른쪽을 바라보며 시작
+        self.is_grid_red()
+        for i in range(5):
+            self.go_forward()
+            self.is_grid_red()
+        for i in range(5):
+            self.go_back()
+
+    def go_to_column(n,m)
+        #(n,0)에서 (m,0)으로 이동 (safe row 를 따라서 이동하고 내려옴) 시작할때 위를 바라보고 도착하고 위를 바라봄
+
+        smallest_safe_row=min(safe_rows)
+        for i in range(smallest_safe_row):
+            self.go_forward()
+        self.turn_right()
+        for i in range(m-n):
+            self.go_forward()
+        self.turn_left()
+        for i in range(smallest_safe_row):
+            self.go_back()
+
+    def go_to_row(n,m)
+        #(0,n)에서 (0,m)으로 이동 (safe columns 을 따라서 이동하고 왼쪽으로 옴) 시작할때오른쪽을 바라보고 도착하고 오른쪽을 바라봄
+        smallest_safe_column=min(safe_columns)
+        for i in range(smallest_safe_column):
+            self.go_forward()
+        self.turn_left()
+        for i in range(m-n):
+            self.go_forward()
+        self.turn_right()
+        for i in range(smallest_safe_row):
+            self.go_back()
+
+    def go_back_to_origin_column(n):
+        #(n,0)에서 (0,0)으로 safe row를 따라서 이동(출발할때 도착할때 위를 바라봄)
+        smallest_safe_row=min(safe_rows)
+        for i in range(smallest_safe_row):
+            self.go_forward()
+        self.turn_right()
+        for i in range(n):
+            self.go_back()
+        self.turn_left()
+        for i in range(smallest_safe_row):
+            self.go_back()
+
+    def go_back_to origin_row(n):
+        smallest_safe_column=min(safe_columns)
+        for i in range(smallest_safe_row):
+            self.go_forward()
+        self.turn_left()
+        for i in range(n):
+            self.go_back()
+        self.turn_right()
+        for i in range(smallest_safe_row):
+            self.go_back()
+
+    defcheck_remainder():
+        #남은 두 상자중 하나를 선택하여 방문
+
+def print_box(box_list):
+    for i in range(2):
+        print((box_list[i][0],box_list[i][1],B))
+def print_red(red_list):
+    for i in range(2):
+        print((red_list[1],red_list[1],R))
+
+
+#아래는 박스 찾기 (잘되면...)
+robo = Robot()
+b1_x, b1_y = robo.scan_forward()
+b2_x, b2_y = (-1, -1)
+
+if b1_x == -1 and b1_y == -1 :
+    b1_x, b1_y = robo.scan_side()
+    for i in range(3) :
+        robo.go_forward()
+        if b1_x != -1 and b1_y != -1 :
+            if b2_x < 0 and b2_y < 0 :
+                b2_x, b2_y = robo.scan_side()
+        else :
+            b1_x, b1_y = robo.scan_side()
+
+    if b2_x == -1 and b2_y == -1 :
+        if b1_y == 3 :
+            for i in range(3) :
+                robo.go_back()
+            robo.turn_left()
+            for i in range(5) :
+                robo.go_back()
+                if b2_x < 0 and b2_y < 0 :
+                    b2_x, b2_y = robo.scan_side()
+                if b2_x == b1_x :
+                    b2_x, b2_y = (-1, -1)
+            for i in range(5) :
+                robo.go_forward()
+            robo.turn_right()
+
+        else :
+            robo.turn_right()
+            for i in range(5) :
+                robo.go_forward()
+                if b2_x < 0 and b2_y < 0 :
+                    b2_x, b2_y = robo.scan_side()
+                if b2_x == b1_x :
+                    b2_x, b2_y = (-1, -1)
+            for i in range(5) :
+                robo.go_back()
+            robo.turn_left()
+            for i in range(3) :
+                robo.go_back()
+
+    else :
+        for i in range(3) :
+            robo.go_back()
+
+else :
+    robo.scan_side()
+    if b2_x != -1 and b2_y != -1 :
+        pass
+
+    else :
+        robo.turn_left()
+        for i in range(5) :
+            robo.go_back()
+            if b2_x < 0 and b2_y < 0 :
+                b2_x, b2_y = robo.scan_side()
+        if b2_x < 0 and b2_y < 0 :
+            robo.turn_left()
+            for i in range(3) :
+                robo.go_back()
+                if b2_x < 0 and b2_y < 0 :
+                    b2_x, b2_y = robo.scan_side()
+                if b2_x == b1_x and b2_y == b1_y :
+                    b2_x, b2_y = (-1, -1)
+            for i in range(3) :
+                robo.go_forward()
+            robo.turn_right()
+        for i in range(5) :
+            robo.go_forward()
+        robo.turn_right()
+
